@@ -1,39 +1,33 @@
 #!/bin/bash
 #
 # Calling: release-test.sh maven-compiler-plugin-3.6.2-source-release.zip maven-compiler-plugin-3.6.2
-# Maybe we can use less memory.
-export MAVEN_OPTS="-Xmx768m -Xms128m -XX:MaxPermSize=512m -Djava.awt.headless=true"
+#
+##export MAVEN_OPTS="-Xmx768m -Xms128m -XX:MaxPermSize=512m -Djava.awt.headless=true"
+export MAVEN_OPTS="-Xmx768m -Xms128m -Djava.awt.headless=true"
+RELEASEAREA=release-test
 JDKBASE=/Library/Java/JavaVirtualMachines/
 JDKSUPP=/Contents/Home
 MAVENBASE=/usr/local
-MAVENVERSIONS="apache-maven-3.0.5"
-#
-#MAVENVERSIONS="apache-maven-3.0.5 \
-#apache-maven-3.1.1 \
-#apache-maven-3.2.5 \
-#apache-maven-3.3.1 \
-#apache-maven-3.3.9 \
-#apache-maven-3.5.0"
+MAVENVERSIONS="apache-maven-3.0.5 \
+apache-maven-3.1.1 \
+apache-maven-3.2.5 \
+apache-maven-3.3.1 \
+apache-maven-3.3.9 \
+apache-maven-3.5.0"
 #
 JDKS="jdk1.7.0_79.jdk \
 jdk1.8.0_131.jdk \
 jdk1.8.0_144.jdk \
 jdk1.9.0_ea+180.jdk"
-#MAVENVERSIONS="apache-maven-3.0.5 \
-#apache-maven-3.1.1 \
-#apache-maven-3.2.5 \
-#apache-maven-3.3.1 \
-#apache-maven-3.3.9 \
-#apache-maven-3.5.0"
 
 BASE=`pwd`
-if [ -e release-test ]; then
+if [ -e $RELEASEAREA ]; then
   echo -n "Removing existing release test area..."
-  rm -fr release-test
+  rm -fr $RELEASEAREA
   echo "done."
 fi
-mkdir -p release-test
-RELEASEBASE=$BASE/release-test
+mkdir -p $RELEASEAREA
+RELEASEBASE=$BASE/$RELEASEAREA
 cd $BASE
 for jdk in $JDKS
 do
