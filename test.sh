@@ -27,6 +27,11 @@ jdk1.9.0_ea+180.jdk"
 #apache-maven-3.5.0"
 
 BASE=`pwd`
+if [ -e release-test ]; then
+  echo -n "Removing existing release test area..."
+  rm -fr release-test
+  echo "done."
+fi
 mkdir -p release-test
 RELEASEBASE=$BASE/release-test
 cd $BASE
@@ -47,10 +52,9 @@ do
     unzip $BASE/$1 >$RELEASEBASE/$jdk/$mvnversion/unzip.log 2>&1
     echo -n "done..start building..."
     unset JAVA_HOME
-    set JAVA_HOME=$JDKBASE/$jdk/$JDKSUPP
     # Need to think about this.
     cd $2
-    $mvnPath -V -Prun-its clean verify > $RELEASEBASE/$jdk/$mvnversion/mvn.log 2>&1
+    JAVA_HOME=$JDKBASE/$jdk/$JDKSUPP $mvnPath -V -Prun-its clean verify > $RELEASEBASE/$jdk/$mvnversion/mvn.log 2>&1
     SUCCEED=$(cat $RELEASEBASE/$jdk/$mvnversion/mvn.log | grep "^\[INFO\] BUILD SUCCESS")
     if [ $? -ne 0 ]; then
       echo "Failure"
