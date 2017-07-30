@@ -4,7 +4,7 @@
 #
 ##export MAVEN_OPTS="-Xmx768m -Xms128m -XX:MaxPermSize=512m -Djava.awt.headless=true"
 export MAVEN_OPTS="-Xmx768m -Xms128m -Djava.awt.headless=true"
-MVNLOG=mvn-1.log
+MVNLOG=mvn.log
 RELEASEAREA=release-test
 JDKBASE=/Library/Java/JavaVirtualMachines/
 JDKSUPP=/Contents/Home
@@ -44,12 +44,20 @@ waitingForEndOfRunning ()
   echo -n "$1$backspace"
   # Put the command given as parameter into background and wait until it is
   # finished.
-  $2 &
+  eval "$2 &"
   PROC_ID=$!
+  pos=0
   while kill -0 "$PROC_ID" >/dev/null 2>&1; do
     echo -n "."
     sleep 0.1
+    pos=$((pos + 1))
+    if [ "$pos" -ge "$len" ]; then
+      echo -n "$backspace"
+      pos=0
+    fi
   done
+  leftbackspace=$(getNumberOfBackspace $pos)
+  echo -n "$leftbackspace"
   echo -n "$3"
 }
 
@@ -78,11 +86,11 @@ do
     echo -n "  $mvnversion..."
     # Unzip the release package.
     #unzip $BASE/$1 >$RELEASEBASE/$jdk/$mvnversion/unzip.log 2>&1
-    waitingForEndOfRunning "Unzipping release package..." "$BASE/temp.sh >$RELEASEBASE/$jdk/$mvnversion/unzip.log 2>&1" "done."
+    waitingForEndOfRunning "Unzipping release package..." "$BASE/temp.sh >$RELEASEBASE/$jdk/$mvnversion/unzip.log 2>&1" "Unpackging done. "
     unset JAVA_HOME
     # Need to think about this.
     cd $2
-    JAVA_HOME=$JDKBASE/$jdk/$JDKSUPP $mvnPath -V -Prun-its clean verify > $RELEASEBASE/$jdk/$mvnversion/$MVNLOG 2>&1
+    waitingForEndOfRunning "Building..." "JAVA_HOME=$JDKBASE/$jdk/$JDKSUPP $mvnPath -V -Prun-its clean verify >$RELEASEBASE/$jdk/$mvnversion/$MVNLOG 2>&1" "Build done. "
     SUCCEED=$(cat $RELEASEBASE/$jdk/$mvnversion/$MVNLOG | grep "^\[INFO\] BUILD SUCCESS")
     if [ $? -ne 0 ]; then
       echo "Failure"
