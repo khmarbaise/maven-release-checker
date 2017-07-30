@@ -64,8 +64,8 @@ waitingForEndOfRunning ()
 BASE=`pwd`
 if [ -e $RELEASEAREA ]; then
   echo -n "Removing existing release test area..."
-  ##rm -fr $RELEASEAREA
-  $BASE/temp-short.sh >$BASE/r.log 2>&1
+  rm -fr $RELEASEAREA >$BASE/remove.log 2>&1
+  # $BASE/temp-short.sh >$BASE/r.log 2>&1
   echo "done."
 fi
 mkdir -p $RELEASEAREA
@@ -79,23 +79,23 @@ do
   for mvnversion in $MAVENVERSIONS
   do
     #echo "Maven: $mvnversion"
-    ### mvnPath=$MAVENBASE/$mvnversion/bin/mvn
-    mvnPath=$BASE/temp.sh
+    mvnPath=$MAVENBASE/$mvnversion/bin/mvn
+    #mvnPath=$BASE/temp.sh
     mkdir -p $RELEASEBASE/$jdk/$mvnversion
     cd $RELEASEBASE/$jdk/$mvnversion
     echo -n "  $mvnversion..."
     # Unzip the release package.
     #unzip $BASE/$1 >$RELEASEBASE/$jdk/$mvnversion/unzip.log 2>&1
-    waitingForEndOfRunning "Unzipping release package..." "$BASE/temp.sh >$RELEASEBASE/$jdk/$mvnversion/unzip.log 2>&1" "Unpacked. "
+    waitingForEndOfRunning "Unzipping release package..." "unzip $BASE/$1 >$RELEASEBASE/$jdk/$mvnversion/unzip.log 2>&1" "Unpacking done. "
     unset JAVA_HOME
     # Need to think about this.
     cd $2
-    waitingForEndOfRunning "Building..." "JAVA_HOME=$JDKBASE/$jdk/$JDKSUPP $mvnPath -V -Prun-its clean verify >$RELEASEBASE/$jdk/$mvnversion/$MVNLOG 2>&1" "Build done. "
+    waitingForEndOfRunning "Building..." "JAVA_HOME=$JDKBASE/$jdk/$JDKSUPP $mvnPath -V -Prun-its clean verify >$RELEASEBASE/$jdk/$mvnversion/$MVNLOG 2>&1" "Building "
     SUCCEED=$(cat $RELEASEBASE/$jdk/$mvnversion/$MVNLOG | grep "^\[INFO\] BUILD SUCCESS")
     if [ $? -ne 0 ]; then
-      printf '\e[0;31mFailure\e[0m\n'
+      printf '\e[0;31mfailed.\e[0m\n'
     else
-      printf '\e[0;32mDone\e[0m\n'
+      printf '\e[0;32mfine.\e[0m\n'
     fi
     cd $RELEASEBASE/$jdk/$mvnversion
   done;
