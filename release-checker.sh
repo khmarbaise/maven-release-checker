@@ -86,16 +86,16 @@ do
     echo -n "  $mvnversion..."
     # Unzip the release package.
     #unzip $BASE/$1 >$RELEASEBASE/$jdk/$mvnversion/unzip.log 2>&1
-    waitingForEndOfRunning "Unzipping release package..." "$BASE/temp.sh >$RELEASEBASE/$jdk/$mvnversion/unzip.log 2>&1" "Unpackging done. "
+    waitingForEndOfRunning "Unzipping release package..." "$BASE/temp.sh >$RELEASEBASE/$jdk/$mvnversion/unzip.log 2>&1" "Unpacked. "
     unset JAVA_HOME
     # Need to think about this.
     cd $2
     waitingForEndOfRunning "Building..." "JAVA_HOME=$JDKBASE/$jdk/$JDKSUPP $mvnPath -V -Prun-its clean verify >$RELEASEBASE/$jdk/$mvnversion/$MVNLOG 2>&1" "Build done. "
     SUCCEED=$(cat $RELEASEBASE/$jdk/$mvnversion/$MVNLOG | grep "^\[INFO\] BUILD SUCCESS")
     if [ $? -ne 0 ]; then
-      echo "Failure"
+      printf '\e[0;31mFailure\e[0m\n'
     else
-      echo "done."
+      printf '\e[0;32mDone\e[0m\n'
     fi
     cd $RELEASEBASE/$jdk/$mvnversion
   done;
