@@ -14,4 +14,9 @@ Scenarios
  * Run mvn -Prun-its clean verfiy ony it.
    * Serveral combinations Maven versions and JDK's
    * safe log files from running (target/it/ ?)
-   
+
+Configuration
+ * Define the command to be used for testing like "mvn -Prun-its clean verfiy"
+   or "mvn clean verify"
+ * Run in separated environments separated local cache (via command line)
+ * Make the run parallel ?

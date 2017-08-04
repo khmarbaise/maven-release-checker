@@ -68,6 +68,9 @@ if [ -e $RELEASEAREA ]; then
   # $BASE/temp-short.sh >$BASE/r.log 2>&1
   echo "done."
 fi
+# Suppress of the loading of ~/.mavenrc file
+export MAVEN_SKIP_RC=1
+#
 mkdir -p $RELEASEAREA
 RELEASEBASE=$BASE/$RELEASEAREA
 cd $BASE
