@@ -20,3 +20,7 @@ Configuration
    or "mvn clean verify"
  * Run in separated environments separated local cache (via command line)
  * Make the run parallel ?
+
+Make a maven tool of it:
+ * Using of toolchains for different JDK's.
+ * 
