@@ -15,7 +15,8 @@ apache-maven-3.2.5 \
 apache-maven-3.3.1 \
 apache-maven-3.3.9 \
 apache-maven-3.5.0 \
-apache-maven-3.5.2"
+apache-maven-3.5.2 \
+apache-maven-3.5.3-SNAPSHOT"
 #
 JDKS="jdk1.7.0_79.jdk \
 jdk1.8.0_131.jdk \
@@ -61,7 +62,7 @@ waitingForEndOfRunning ()
   echo -n "$leftbackspace"
   echo -n "$3"
 }
-
+##
 BASE=`pwd`
 if [ -e $RELEASEAREA ]; then
   echo -n "Removing existing release test area..."
@@ -69,12 +70,26 @@ if [ -e $RELEASEAREA ]; then
   # $BASE/temp-short.sh >$BASE/r.log 2>&1
   echo "done."
 fi
+#
+# We need to do this before MAVEN_SKIP_RC 
+# to have JAVA_HOME defined for the call.
+#
+echo "Using the following Maven versions for testing"
+for mvnversion in $MAVENVERSIONS; do
+    mvnPath=$MAVENBASE/$mvnversion/bin/mvn
+    MAVENVERSION=$($mvnPath --version | head -1 )
+    echo "${MAVENVERSION}"
+done;
+echo "Start testing..."
+#
 # Suppress of the loading of ~/.mavenrc file
+# so we can decide which JAVA_HOME etc. should be used.
 export MAVEN_SKIP_RC=1
 #
 mkdir -p $RELEASEAREA
 RELEASEBASE=$BASE/$RELEASEAREA
 cd $BASE
+##
 for jdk in $JDKS
 do
   echo "$jdk";
