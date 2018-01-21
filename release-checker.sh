@@ -1,11 +1,11 @@
 #!/bin/bash
 #
-# Calling: release-test.sh maven-compiler-plugin-3.6.2-source-release.zip maven-compiler-plugin-3.6.2
+# Calling: release-test.sh https://repository.apache.org/content/repositories/maven-1391/org/a.../maven-pmd-plugin/3.9.0/maven-pmd-plugin-3.9.0-source-release.zip
 #
 ##export MAVEN_OPTS="-Xmx768m -Xms128m -XX:MaxPermSize=512m -Djava.awt.headless=true"
 export MAVEN_OPTS="-Xmx768m -Xms128m -Djava.awt.headless=true"
 MVNLOG=mvn.log
-RELEASEAREA=release-test
+RELEASEAREA=test-area
 JDKBASE=/Library/Java/JavaVirtualMachines/
 JDKSUPP=/Contents/Home
 MAVENBASE=/usr/local
@@ -67,9 +67,44 @@ BASE=`pwd`
 if [ -e $RELEASEAREA ]; then
   echo -n "Removing existing release test area..."
   rm -fr $RELEASEAREA >$BASE/remove.log 2>&1
-  # $BASE/temp-short.sh >$BASE/r.log 2>&1
   echo "done."
 fi
+#
+# Downloading release packages including checksum packages sha1/md5
+DOWNLOAD_FILENAME=$(basename $1)
+DOWNLOAD_BASEURL=$(dirname $1)
+echo -n "Downloading release package $DOWNLOAD_FILENAME..."
+curl -s $1 -O
+if [ $? -ne 0 ]; then
+  echo "Failure during download."
+  exit $?
+fi
+echo "done."
+#
+echo -n "Downloading sha1 package for $DOWNLOAD_FILENAME..."
+curl -s $DOWNLOAD_BASEURL/$DOWNLOAD_FILENAME.sha1 -O
+if [ $? -ne 0 ]; then
+  echo "Failure during download."
+  exit $?
+fi
+echo "done."
+#
+echo -n "Downloading md5 package $DOWNLOAD_FILENAME..."
+curl -s $DOWNLOAD_BASEURL/$DOWNLOAD_FILENAME.md5 -O
+if [ $? -ne 0 ]; then
+  echo "Failure during download."
+  exit $?
+fi
+echo "done."
+
+./downloadcheck.sh $DOWNLOAD_FILENAME
+if [ $? -ne 0 ]; then
+  echo "Failure during checksum verification."
+  exit $?
+fi
+
+# Extract the directory name from zip file:
+DIRNAME=$(unzip -Z -1 $DOWNLOAD_FILENAME | head -1)
 #
 # We need to do this before MAVEN_SKIP_RC 
 # to have JAVA_HOME defined for the call.
@@ -105,10 +140,10 @@ do
     echo -n "  $mvnversion..."
     # Unzip the release package.
     #unzip $BASE/$1 >$RELEASEBASE/$jdk/$mvnversion/unzip.log 2>&1
-    waitingForEndOfRunning "Unzipping release package..." "unzip $BASE/$1 >$RELEASEBASE/$jdk/$mvnversion/unzip.log 2>&1" "Unpacking done. "
+    waitingForEndOfRunning "Unzipping release package..." "unzip $BASE/$DOWNLOAD_FILENAME >$RELEASEBASE/$jdk/$mvnversion/unzip.log 2>&1" "Unpacking done. "
     unset JAVA_HOME
     # Need to think about this.
-    cd $2
+    cd $DIRNAME
     waitingForEndOfRunning "Building..." "JAVA_HOME=$JDKBASE/$jdk/$JDKSUPP $mvnPath -V -Prun-its clean verify >$RELEASEBASE/$jdk/$mvnversion/$MVNLOG 2>&1" "Building "
     SUCCEED=$(cat $RELEASEBASE/$jdk/$mvnversion/$MVNLOG | grep "^\[INFO\] BUILD SUCCESS")
     if [ $? -ne 0 ]; then
