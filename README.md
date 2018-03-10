@@ -1,19 +1,26 @@
+Maven Release Checker
+=====================
+
+Currently this is an approache to have a script based 
+checking which will check the release packages with
+several JDK, Maven versions in combination.
 
 Scenarios
-=========
+---------
 
  o Test a release of a maven plugin
 
 
    What to do?
 
- * Download the source-package + sha1 package
- * calculate sha1 checksum
- * check calculate against downloaded sha1 package
- * Unpackage downloaded source-package
+ * Download the source-package + sha1 package (done).
+ * calculate sha1 checksum (done).
+ * check calculate against downloaded sha1 package (done).
+ * Unpackage downloaded source-package (done).
  * Run mvn -Prun-its clean verfiy ony it.
    * Serveral combinations Maven versions and JDK's
    * safe log files from running (target/it/ ?)
+
 
 Configuration
  * Define the command to be used for testing like "mvn -Prun-its clean verfiy"
