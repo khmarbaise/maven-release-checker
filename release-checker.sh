@@ -16,12 +16,13 @@ apache-maven-3.3.1 \
 apache-maven-3.3.9 \
 apache-maven-3.5.0 \
 apache-maven-3.5.2 \
-apache-maven-3.5.3-SNAPSHOT"
+apache-maven-3.5.3"
 #
 JDKS="jdk1.7.0_79.jdk \
 jdk1.8.0_131.jdk \
 jdk1.8.0_144.jdk \
-jdk-9.0.1.jdk"
+jdk-9.0.1.jdk \
+jdk-9.0.4.jdk"
 #
 # Get back 20 backspaces.
 # result=$(getNumberOfBackspace 20)
@@ -104,7 +105,7 @@ if [ $? -ne 0 ]; then
 fi
 
 # Extract the directory name from zip file:
-DIRNAME=$(unzip -Z -1 $DOWNLOAD_FILENAME | head -1)
+DIRNAME=$(unzip -Z -1 $DOWNLOAD_FILENAME | sort | head -1)
 #
 # We need to do this before MAVEN_SKIP_RC 
 # to have JAVA_HOME defined for the call.
