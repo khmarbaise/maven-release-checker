@@ -1,7 +1,7 @@
 Maven Release Checker
 =====================
 
-Currently this is an approache to have a script based 
+Currently this is an approach to have a script based 
 checking which will check the release packages with
 several JDKs and Maven versions in combination.
 
