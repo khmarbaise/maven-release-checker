@@ -21,8 +21,8 @@ apache-maven-3.5.3"
 JDKS="jdk1.7.0_79.jdk \
 jdk1.8.0_131.jdk \
 jdk1.8.0_144.jdk \
-jdk-9.0.1.jdk \
-jdk-9.0.4.jdk"
+jdk-9.0.4.jdk \
+jdk-10.jdk"
 #
 # Get back 20 backspaces.
 # result=$(getNumberOfBackspace 20)
